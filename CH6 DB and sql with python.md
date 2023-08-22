@@ -1,11 +1,17 @@
-# Create & Access SQLite database using Python
+# Lab1: Create & Access SQLite database using Python
 ## Objectives
 >1. Create a database  
 >2. Create a table  
 >3. Insert data into the table  
 >4. Query data from the table  
 >5. Retrieve the result set into a pandas dataframe  
->6. Close the database connection  
+>6. Close the database connection
+
+### The connection methods are:
+>The **cursor()** method, which returns a new cursor object using the connection.  
+>The **commit()** method, which is used to commit any pending transaction to the database.  
+>The **rollback()** method, which causes the database to roll-back to the start of any pending transaction.  
+>The **close()** method, which is used to close a database connection.  
 
 ## Task 1.Create database using SQLite
 ```python
@@ -102,3 +108,66 @@ df
 
 ## Task 6: Close the Connection
 ```conn.close()```
+
+# Analyzing a real world data-set with SQL and Python
+## Objectives:
+>1. Understand a dataset of selected socioeconomic indicators in Chicago
+>2. Learn how to store data in an SQLite database.
+>3. Solve example problems to practice your SQL skill
+
+# Lab2: 
+The city of Chicago released a dataset of socioeconomic data to the Chicago City Portal. This dataset contains a selection of six socioeconomic indicators of public health significance and a “hardship index,” for each Chicago community area, for the years 2008 – 2012.  
+[the city of Chicago's website](https://data.cityofchicago.org/Health-Human-Services/Census-Data-Selected-socioeconomic-indicators-in-C/kn9c-c2s2?utm_medium=Exinfluencer&utm_source=Exinfluencer&utm_content=000026UJ&utm_term=10006555&utm_id=NA-SkillsNetwork-Channel-SkillsNetworkCoursesIBMDeveloperSkillsNetworkDB0201ENSkillsNetwork20127838-2021-01-01)  
+
+### **SQL Magic** commands to execute queries more easily from Jupyter Notebooks
+Magic commands have the general format **%sql select * from tablename**  
+**Cell magics**:start with a double %% (percent) sign and apply to the entire cell.  
+**Line magics**:start with a single % (percent) sign and apply to a particular line in a cell.  
+
+## Task1:Socioeconomic in Chicago：connect to the database
+Let us first load the SQL extension and establish a connection with the database  
+The syntax for connecting to magic sql using sqllite is  
+%sql sqlite://DatabaseName  
+where DatabaseName will be your .db file  
+```python
+%load_ext SQL
+import csv, sqlite3
+
+con = sqlite3.connect("socioeconomic.db")
+cur = con.cursor()
+!pip install -q pandas==1.1.5
+
+%sql sqlite:///socioeconomic.db
+```
+```python
+# cursor object
+cursor_obj = conn.cursor()
+```
+
+## Task 2: Store the dataset in the table
+```python
+import pandas
+df = pandas.read_csv('https://data.cityofchicago.org/resource/jcxq-k9xf.csv')
+df.to_sql("chicago_socioeconomic_data", con, if_exists='replace', index=False,method="multi")
+```
+
+__Problem 1__
+_How many rows are in the dataset?_  
+_data  
+```%sql SELECT COUNT(*) FROM chicago_socioeconomic_data```
+ * sqlite:///socioeconomic.db  
+Done.  
+COUNT(*)  
+78  
+
+__Problem 2__
+_How many community areas in Chicago have a hardship index greater than 50.0?_  
+%sql SELECT COUNT(*) FROM chicago_socioeconomic_data WHERE hardship_index > 50.0  
+ * sqlite:///socioeconomic.db  
+Done.  
+
+__Problem 3__
+_What is the maximum value of hardship index in this dataset?_
+%sql SELECT MAX(hardship_index) FROM chicago_socioeconomic_data;  
+ * sqlite:///socioeconomic.db  
+Done.  
