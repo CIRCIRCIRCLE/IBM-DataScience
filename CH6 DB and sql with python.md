@@ -162,13 +162,13 @@ COUNT(*)
 
 __Problem 2__
 _How many community areas in Chicago have a hardship index greater than 50.0?_  
-%sql SELECT COUNT(*) FROM chicago_socioeconomic_data WHERE hardship_index > 50.0  
+```%sql SELECT COUNT(*) FROM chicago_socioeconomic_data WHERE hardship_index > 50.0 ``` 
  * sqlite:///socioeconomic.db  
 Done.  
 
 __Problem 3__
 _What is the maximum value of hardship index in this dataset?_
-%sql SELECT MAX(hardship_index) FROM chicago_socioeconomic_data;  
+```%sql SELECT MAX(hardship_index) FROM chicago_socioeconomic_data;  ```
  * sqlite:///socioeconomic.db  
 Done.  
 
