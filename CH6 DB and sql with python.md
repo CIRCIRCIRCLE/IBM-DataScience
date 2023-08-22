@@ -99,3 +99,6 @@ df = pd.read_sql_query("select * from instructor;", conn)
 #print the dataframe
 df
 ```
+
+## Task 6: Close the Connection
+```conn.close()```
