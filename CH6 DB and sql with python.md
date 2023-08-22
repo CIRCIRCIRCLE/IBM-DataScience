@@ -105,6 +105,7 @@ df = pd.read_sql_query("select * from instructor;", conn)
 #print the dataframe
 df
 ```
+```PIC```
 
 ## Task 6: Close the Connection
 ```conn.close()```
@@ -182,3 +183,61 @@ import seaborn as sns
 income_vs_hardship = %sql SELECT per_capita_income_, hardship_index FROM chicago_socioeconomic_data;
 plot = sns.jointplot(x='per_capita_income_',y='hardship_index', data=income_vs_hardship.DataFrame())
 ```
+```PIC```
+
+## PS: Create and insert using sql magic
+
+```python
+import csv, sqlite3
+con = sqlite3.connect("SQLiteMagic.db")
+cur = con.cursor()
+
+%load_ext SQL
+%sql sqlite:///SQLiteMagic.db
+```
+
+```python
+%%sql
+
+CREATE TABLE INTERNATIONAL_STUDENT_TEST_SCORES (
+	country VARCHAR(50),
+	first_name VARCHAR(50),
+	last_name VARCHAR(50),
+	test_score INT
+);
+INSERT INTO INTERNATIONAL_STUDENT_TEST_SCORES (country, first_name, last_name, test_score)
+VALUES
+('United States', 'Marshall', 'Bernadot', 54),
+('Ghana', 'Celinda', 'Malkin', 51),
+('Ukraine', 'Guillermo', 'Furze', 53),
+('Greece', 'Aharon', 'Tunnow', 48),
+('Russia', 'Bail', 'Goodwin', 46),
+('Poland', 'Cole', 'Winteringham', 49),
+('Sweden', 'Emlyn', 'Erricker', 55),
+('Russia', 'Cathee', 'Sivewright', 49),
+('China', 'Barny', 'Ingerson', 57),
+('Uganda', 'Sharla', 'Papaccio', 55)
+```
+## Using Python Variables in SQL Statements
+You can use python variables in your SQL statements by adding a ":" prefix to your python variable names.  
+For example, if I have a python variable country with a value of "Canada", I can use this variable in a SQL query to find all the rows of students from Canada.  
+```python
+country = "Canada"
+%sql select * from INTERNATIONAL_STUDENT_TEST_SCORES where country = :country
+```
+## Assigning the Results of Queries to Python Variables and Converting Query Results to DataFrames
+describe test score frequency, visualize the results  
+You can easily convert a SQL query result to a pandas dataframe using the DataFrame() method. Dataframe objects are much more versatile than SQL query result objects. For example, we can easily graph our test score distribution after converting to a dataframe.  
+
+```python
+#get the distribution results
+test_score_distribution = %sql SELECT test_score as "Test_Score", count(*) as "Frequency" from INTERNATIONAL_STUDENT_TEST_SCORES GROUP BY test_score;
+
+#visualization
+dataframe = test_score_distribution.DataFrame()
+%matplotlib inline
+import seaborn
+plot = seaborn.barplot(x='Test_Score',y='Frequency', data=dataframe)
+```
+
+```PIC```
