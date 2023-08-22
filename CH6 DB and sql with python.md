@@ -120,9 +120,9 @@ The city of Chicago released a dataset of socioeconomic data to the Chicago City
 [the city of Chicago's website](https://data.cityofchicago.org/Health-Human-Services/Census-Data-Selected-socioeconomic-indicators-in-C/kn9c-c2s2?utm_medium=Exinfluencer&utm_source=Exinfluencer&utm_content=000026UJ&utm_term=10006555&utm_id=NA-SkillsNetwork-Channel-SkillsNetworkCoursesIBMDeveloperSkillsNetworkDB0201ENSkillsNetwork20127838-2021-01-01)  
 
 ### **SQL Magic** commands to execute queries more easily from Jupyter Notebooks
-Magic commands have the general format **%sql select * from tablename**  
-**Cell magics**:start with a double %% (percent) sign and apply to the entire cell.  
-**Line magics**:start with a single % (percent) sign and apply to a particular line in a cell.  
+>1.Magic commands have the general format **%sql select * from tablename**  
+>2.**Cell magics**:start with a double %% (percent) sign and apply to the entire cell.  
+>3.**Line magics**:start with a single % (percent) sign and apply to a particular line in a cell.  
 
 ## Task1:Socioeconomic in Chicago：connect to the database
 Let us first load the SQL extension and establish a connection with the database  
@@ -144,14 +144,14 @@ cur = con.cursor()
 cursor_obj = conn.cursor()
 ```
 
-## Task 2: Store the dataset in the table
+## Task 2: Store the dataset in the table  
 ```python
 import pandas
 df = pandas.read_csv('https://data.cityofchicago.org/resource/jcxq-k9xf.csv')
 df.to_sql("chicago_socioeconomic_data", con, if_exists='replace', index=False,method="multi")
 ```
 
-__Problem 1__
+__Problem 1__  
 _How many rows are in the dataset?_  
 _data  
 ```%sql SELECT COUNT(*) FROM chicago_socioeconomic_data```
@@ -160,19 +160,19 @@ Done.
 COUNT(*)  
 78  
 
-__Problem 2__
+__Problem 2__  
 _How many community areas in Chicago have a hardship index greater than 50.0?_  
 ```%sql SELECT COUNT(*) FROM chicago_socioeconomic_data WHERE hardship_index > 50.0 ``` 
  * sqlite:///socioeconomic.db  
 Done.  
 
-__Problem 3__
+__Problem 3__  
 _What is the maximum value of hardship index in this dataset?_
 ```%sql SELECT MAX(hardship_index) FROM chicago_socioeconomic_data;  ```
  * sqlite:///socioeconomic.db  
 Done.  
 
-__Problem 4__
+## Task3: Visualization
 _Create a scatter plot using the variables per_capita_income_ and hardship_index. Explain the correlation between the two variables._
 ```python
 import matplotlib.pyplot as plt
