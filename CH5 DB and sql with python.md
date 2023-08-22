@@ -8,7 +8,7 @@
 >6. Close the database connection  
 
 ## 1.Create database using SQLite
-```
+```python
 #Install & load sqlite3
 #!pip install sqlite3  ##Uncomment the code to install sqlite3
 import sqlite3
