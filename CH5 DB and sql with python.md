@@ -8,10 +8,10 @@
 >6. Close the database connection  
 
 ## 1.Create database using SQLite
-'''
+```
 #Install & load sqlite3
 #!pip install sqlite3  ##Uncomment the code to install sqlite3
 import sqlite3
 #connection object
 conn = sqlite3.connect('INSTRUCTOR.db')
-'''
+```
