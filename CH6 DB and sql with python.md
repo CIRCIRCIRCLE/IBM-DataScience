@@ -171,3 +171,14 @@ _What is the maximum value of hardship index in this dataset?_
 %sql SELECT MAX(hardship_index) FROM chicago_socioeconomic_data;  
  * sqlite:///socioeconomic.db  
 Done.  
+
+__Problem 4__
+_Create a scatter plot using the variables per_capita_income_ and hardship_index. Explain the correlation between the two variables._
+```python
+import matplotlib.pyplot as plt
+%matplotlib inline
+import seaborn as sns
+
+income_vs_hardship = %sql SELECT per_capita_income_, hardship_index FROM chicago_socioeconomic_data;
+plot = sns.jointplot(x='per_capita_income_',y='hardship_index', data=income_vs_hardship.DataFrame())
+```
