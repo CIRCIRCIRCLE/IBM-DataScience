@@ -267,3 +267,129 @@ df.to_sql("CHICAGO_PUBLIC_SCHOOLS_DATA", con, if_exists='replace', index=False, 
 |CENSUS_DATA|
 |CHICAGO_CRIME_DATA|
 |CHICAGO_PUBLIC_SCHOOLS_DATA|
+
+## Query the database system catalog to retrieve column metadata
+```
+%sql SELECT name,type,Length(type) FROM PRAGMA_TABLE_INFO('CHICAGO_PUBLIC_SCHOOLS_DATA')
+```
+
+|name|type|Length(type)|
+|School_ID|INTEGER|7|
+|NAME_OF_SCHOOL|TEXT|4|
+Elementary, Middle, or High School	TEXT	4  
+Street_Address	TEXT	4  
+City	TEXT	4  
+State	TEXT	4  
+ZIP_Code	INTEGER	7  
+Phone_Number	TEXT	4  
+Link	TEXT	4  
+Network_Manager	TEXT	4  
+Collaborative_Name	TEXT	4  
+Adequate_Yearly_Progress_Made_	TEXT	4  
+Track_Schedule	TEXT	4  
+CPS_Performance_Policy_Status	TEXT	4  
+CPS_Performance_Policy_Level	TEXT	4  
+HEALTHY_SCHOOL_CERTIFIED	TEXT	4  
+Safety_Icon	TEXT	4  
+SAFETY_SCORE	REAL	4  
+Family_Involvement_Icon	TEXT	4  
+Family_Involvement_Score	TEXT	4  
+Environment_Icon	TEXT	4  
+Environment_Score	REAL	4  
+Instruction_Icon	TEXT	4  
+Instruction_Score	REAL	4  
+Leaders_Icon	TEXT	4  
+Leaders_Score	TEXT	4  
+Teachers_Icon	TEXT	4  
+Teachers_Score	TEXT	4  
+Parent_Engagement_Icon	TEXT	4  
+Parent_Engagement_Score	TEXT	4  
+Parent_Environment_Icon	TEXT	4  
+Parent_Environment_Score	TEXT	4  
+AVERAGE_STUDENT_ATTENDANCE	TEXT	4  
+Rate_of_Misconducts__per_100_students_	REAL	4  
+Average_Teacher_Attendance	TEXT	4  
+Individualized_Education_Program_Compliance_Rate	TEXT	4  
+Pk_2_Literacy__	TEXT	4  
+Pk_2_Math__	TEXT	4  
+Gr3_5_Grade_Level_Math__	TEXT	4  
+Gr3_5_Grade_Level_Read__	TEXT	4  
+Gr3_5_Keep_Pace_Read__	TEXT	4  
+Gr3_5_Keep_Pace_Math__	TEXT	4  
+Gr6_8_Grade_Level_Math__	TEXT	4  
+Gr6_8_Grade_Level_Read__	TEXT	4  
+Gr6_8_Keep_Pace_Math_	TEXT	4  
+Gr6_8_Keep_Pace_Read__	TEXT	4  
+Gr_8_Explore_Math__	TEXT	4  
+Gr_8_Explore_Read__	TEXT	4  
+ISAT_Exceeding_Math__	REAL	4  
+ISAT_Exceeding_Reading__	REAL	4  
+ISAT_Value_Add_Math	REAL	4  
+ISAT_Value_Add_Read	REAL	4  
+ISAT_Value_Add_Color_Math	TEXT	4  
+ISAT_Value_Add_Color_Read	TEXT	4  
+Students_Taking__Algebra__	TEXT	4  
+Students_Passing__Algebra__	TEXT	4  
+9th Grade EXPLORE (2009)	TEXT	4  
+9th Grade EXPLORE (2010)	TEXT	4  
+10th Grade PLAN (2009)	TEXT	4  
+10th Grade PLAN (2010)	TEXT	4  
+Net_Change_EXPLORE_and_PLAN	TEXT	4  
+11th Grade Average ACT (2011)	TEXT	4  
+Net_Change_PLAN_and_ACT	TEXT	4  
+College_Eligibility__	TEXT	4  
+Graduation_Rate__	TEXT	4  
+College_Enrollment_Rate__	TEXT	4  
+COLLEGE_ENROLLMENT	INTEGER	7  
+General_Services_Route	INTEGER	7  
+Freshman_on_Track_Rate__	TEXT	4  
+X_COORDINATE	REAL	4  
+Y_COORDINATE	REAL	4  
+Latitude	REAL	4  
+Longitude	REAL	4  
+COMMUNITY_AREA_NUMBER	INTEGER	7  
+COMMUNITY_AREA_NAME	TEXT	4  
+Ward	INTEGER	7  
+Police_District	INTEGER	7  
+Location	TEXT	4  
+
+## Problem 1:  
+Which schools have highest Safety Score?  
+```python
+%%sql 
+SELECT NAME_OF_SCHOOL 
+FROM CHICAGO_PUBLIC_SCHOOLS_DATA 
+WHERE SAFETY_SCORE = (SELECT MAX(Safety_Score) from CHICAGO_PUBLIC_SCHOOLS_DATA)
+```
+## Problem 2:  
+Retrieve the list of 5 Schools with the lowest Average Student Attendance sorted in ascending order based on attendance  
+```python
+%%sql
+SELECT Name_of_School, Average_Student_Attendance
+FROM CHICAGO_PUBLIC_SCHOOLS_DATA
+WHERE Average_Student_Attendance NOT null
+ORDER BY Average_Student_Attendance
+LIMIT 5
+```
+
+## Problem 3:  
+Now remove the '%' sign from the above result set for Average Student Attendance column  
+```python
+%%sql
+SELECT Name_of_School, REPLACE(Average_Student_Attendance, '%', '') AS AVERAGE_ATTENDANCE
+FROM CHICAGO_PUBLIC_SCHOOLS_DATA
+WHERE Average_Student_Attendance NOT null
+ORDER BY Average_Student_Attendance
+LIMIT 5
+```
+
+## Problem 4:  
+Which Schools have Average Student Attendance lower than 70%?  
+___convert text type to double, then compare with integers___
+```python
+%%sql
+SELECT Name_of_School, Average_Student_Attendance
+FROM CHICAGO_PUBLIC_SCHOOLS_DATA
+WHERE CAST(REPLACE(Average_Student_Attendance, '%', '') AS DOUBLE ) < 70 
+ORDER BY Average_Student_Attendance
+```
