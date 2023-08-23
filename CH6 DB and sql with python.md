@@ -241,3 +241,29 @@ plot = seaborn.barplot(x='Test_Score',y='Frequency', data=dataframe)
 ```
 
 ```PIC```
+
+# lab3: Real world data with Chicago Public Schools
+## Connect to database
+```python
+import csv, sqlite3
+con = sqlite3.connect("RealWorldData.db")
+cur = con.cursor()
+
+%load_ext SQL
+%sql sqlite:///RealWorldData.db
+```
+
+## Store the data in the table
+```python
+df = pandas.read_csv("https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBMDeveloperSkillsNetwork-DB0201EN-SkillsNetwork/labs/FinalModule_Coursera_V5/data/ChicagoPublicSchools.csv")
+
+df.to_sql("CHICAGO_PUBLIC_SCHOOLS_DATA", con, if_exists='replace', index=False, method="multi")
+```
+```
+%sql SELECT name FROM sqlite_master WHERE type='table'
+```
+|name|
+|-----|
+|CENSUS_DATA|
+|CHICAGO_CRIME_DATA|
+|CHICAGO_PUBLIC_SCHOOLS_DATA|
