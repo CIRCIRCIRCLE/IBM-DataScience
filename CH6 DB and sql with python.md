@@ -274,6 +274,7 @@ df.to_sql("CHICAGO_PUBLIC_SCHOOLS_DATA", con, if_exists='replace', index=False, 
 ```
 
 |name|type|Length(type)|
+|----|----|------------|
 |School_ID|INTEGER|7|
 |NAME_OF_SCHOOL|TEXT|4|
 Elementary, Middle, or High School	TEXT	4  
@@ -392,4 +393,12 @@ SELECT Name_of_School, Average_Student_Attendance
 FROM CHICAGO_PUBLIC_SCHOOLS_DATA
 WHERE CAST(REPLACE(Average_Student_Attendance, '%', '') AS DOUBLE ) < 70 
 ORDER BY Average_Student_Attendance
+```
+
+## Problem 5:  
+Get the hardship index for the community area which has the highest value for College Enrollment.  
+```python
+%sql select community_area_number, community_area_name, hardship_index from CENSUS_DATA \
+   where community_area_number in \
+   (select community_area_number from CHICAGO_PUBLIC_SCHOOLS_DATA order by college_enrollment desc limit 1)
 ```
