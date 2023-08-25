@@ -99,3 +99,92 @@ Convert categorical variables to dummy variables (0 or 1)
 '''
 pd.get_dummies(df["fuel"])
 ```
+
+## WEEK3: Exploratory Data Analysis
+* Learning objectives:
+	* Descriptive statistics: Describe basic features of a data set, and obtain a short summary about the sample and measures of the data
+	* GroupBy: Grouping data -> transform the dataset
+	* ANOVA: Analysis of variance, a statistical method in which the variation in a set of observations is divided into distinct components
+	* Correlation between different variables
+	* Advance correlation: various correlations statistical methods namely, Pearson correlation, and correlation heatmaps
+
+ ### 3.1 Descriptive Statistics
+ `df.describe()`
+ ```python
+df.describe()
+
+'''
+- Show stats of dataframe: count, mean, std, min, 25%, 75%, max
+- NaN is automatically skipped 
+'''
+```
+
+`df.value_count()`
+```python
+drive_wheels_counts = df["drive-wheels"].value_count()
+
+# Change column name
+drive_wheels_counts.rename(columns = {'drive-wheels': 'value_count' inplace=True})
+drive_wheels_counts.index.name = 'drive-wheels'
+```
+
+#### `visualization methods regarding descriptive statistics:
+`Boxplot`: Median, Upper quartile `75%`, Lower quartile `25%`, Lower extreme, upper extreme, outliers as individual dots  
+```python
+sns.boxplot(x='drive-wheels', y='price', data=df)
+```
+
+`Scatter plot`:  
+```python
+x = df["engine-size"]
+y = df["price"]
+plt.scatter(x,y)
+```
+
+### 3.2 GroupBy in Python
+Example:
+```python
+# First pick out the three data columns we are interested in
+df_test = df[['drive-wheels', 'body-style', 'price']]
+
+# Group the reduced data according to 'drive-wheels' and 'body-style' 
+# Since we are interested in knowing how the average price differs 
+# across the board, we can take the mean of each group and append 
+# it this bit at the very end of the line too
+df_grp = df_test.groupby(['drive-wheels', 'body-style'], as_index=False).mean()
+
+# Use the groupby function to find the average "price" of each car based on "body-style"
+df[['price','body-style']].groupby(['body-style'],as_index= False).mean()
+```
+
+Result:
+no.	| drive-wheels 	| body-style 	| price
+----|---------------|---------------|------------
+0	| 4wd			| hatchback		| **7603.00**
+1	| 4wd			| sedan			| 12647
+2	| 4wd			| wagon			| 9095
+3	| fwd			| convertible	| 11595
+4	| fwd			| hardtop		| 8249
+5	| fwd			| hatchback		| 8396
+6	| fwd			| sedan			| 9811
+7	| fwd			| wagon			| 9997
+8	| rwd			| convertible	| 23949
+9	| rwd			| hardtop		| 24202
+10	| rwd			| hatchback		| 14337
+11	| rwd			| sedan			| 21711
+12	| rwd			| wagon			| 16994
+
+#### Pandas method: `pivot()`  
+df_pivot = df_grp.pivot(index='drive-wheels', columns='body-style')
+**body-style: along the columns, drive-wheels: along the rows**
+Result:
+
+| price 	 | 	         |	     | 		 |       |
+|----------------|---------------|-----------|-----------|-------|--------
+|body-style	 | convertible 	 | hardtop   | hatchback | sedan | wagon
+|drive-wheels 	 |  		 |  	     | 		 |       | 
+|4wd		 | 20239 	 | 20239     | 7603 	 | 12647 | 9095
+|fwd		 | 11595 	 | 8249	     | 8396 	 | 9811	 | 9997
+|rwd		 | 23949 	 | 24202     | 14337 	 | 21711 | 16994 
+
+#### visualization method: `heatmap`  
