@@ -357,3 +357,154 @@ r_squared = r2_score(y, p(x))
 print('The R-square value is: ', r_squared)
 ```
 
+# Week5: Model Evaluation and Refinement
+## 5.1 Model Evaluation
+**Training and Testing Set**
+`Training set` (in-sample data): To build a model and discover predictive relationships  
+`Testing set` (out-of-sample data): To evaluate model performance  
+```python
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.3, random_state=0)
+```
+
+**`cross-validation`** ：Generalization Performance
+Definition: the dataset is split into K equal groups. Each group is referred to as a fold (i.e., K-fold).  
+The evaluation metric depends on the model, for example, the R-squared  
+The simplest way to apply cross-validation is to call the `cross_val_score()` function of sklearn, which performs multiple out-of-sample evaluations  
+The default scoring is `R-Squared`, each element in the array has the average R-Squared value in the fold  
+```python
+from sklearn.model_selection import cross_val_score
+scores = cross_val_score(lr, x_data, y_data, cv=3)
+np.mean(scores)
+```
+
+**cross_val_predict()**
+```python
+from sklearn.model_selection import cross_val_score
+yhat = cross_val_predict(lr2e, x_data, y_data, cv=3)
+```
+
+## 5.2 Over-fitting, Under-fitting and Model Selection
+![c6_w5_poly_order](https://github.com/luuquangtrung/ibm_data_science/blob/master/images/c6_w5_poly_order.png)  
+* Anything on the left would be considered `underfitting`, anything on the right is `overfitting`
+* If we select the best order of the polynomial, we will still have some errors. If you recall the original expression for the training points we see a noise term. This term is one reason for the error. This is because the noise is random and we can't predict it. This is sometimes referred to as an irreducible error.
+
+  We can calculate different R-squared values as follows:  
+```python
+Rsquared_test = []
+order = [1, 2, 3, 4] # To test the model with different polynomial order
+
+for n in order:
+
+	# Create a polynomial feature object 
+	pr = PolynomialFeatures(degree=n)
+
+	# Transform the training and test data into a 
+	# polynomial using the fit transform method
+	x_train_pr 	= pr.fit_transform(x_train[['horsepower']])
+	x_test_pr 	= pr.fit_transform(x_test[['horsepower']]) 
+
+	# Fit the regression model using the transform data
+	lr.fit(x_train_pr, y_train)
+
+	# Calculate the R-squared using the test data and store it in the array
+	Rsquared_test.append(lr.score(x_test_pr, y_test))
+```
+
+## 5.3 Ridge Regression
+* Prevents overfitting
+* Overfitting is serious especially when we have many outliers
+* Ridge regression controls the magnitude of these polynomial coefficients by introducing the parameter `alpha`
+* `alpha` is a parameter we select before fitting or training the model
+* Each row in the following table represents an increasing value of `alpha`
+* As `alpha` increases the parameters get smaller. This is most evident for the higher order polynomial features
+* `alpha` must be selected carefully
+	* If `alpha = 0`, the overfitting is evident
+	* If `alpha` is too large, the coefficients will approach `0` -> Underfitting
+
+## `Code`
+```python
+from sklearn.linear_model import Ridge
+
+RigeModel = Ridge(alpha=0.1)
+RigeModel.fit(X, y)
+Yhat = RigeModel.predict(X)
+```
+
+Procedure:
+Set `alpha` value -> Train -> Predict -> Calculate `R-squared` and keep track of it
+-> Set another `alpha` value and repeat the process
+Finally: Select the value of `alpha` that maximizes the `R-squared`
+Note: Instread of `R-squared`, we can also use other metric like MSE
+* For `alpha = 0.001`, the overfitting begins to subside
+* For `alpha = 0.01`, the estimated function tracks the actual function (good value)
+* For `alpha = 1`, we see the first signs of underfitting. The estimated function does not have enough flexibility
+* For `alpha = 10`, we see extreme underfitting
+
+![c6_w5_alpha_0](https://github.com/luuquangtrung/ibm_data_science/blob/master/images/c6_w5_alpha_0.png)
+
+![c6_w5_alpha_0p001](https://github.com/luuquangtrung/ibm_data_science/blob/master/images/c6_w5_alpha_0p001.png)
+
+![c6_w5_alpha_0p01](https://github.com/luuquangtrung/ibm_data_science/blob/master/images/c6_w5_alpha_0p01.png)
+
+![c6_w5_alpha_1](https://github.com/luuquangtrung/ibm_data_science/blob/master/images/c6_w5_alpha_1.png)
+
+![c6_w5_alpha_10](https://github.com/luuquangtrung/ibm_data_science/blob/master/images/c6_w5_alpha_10.png)
+
+
+## 5.4 Grid Search
+**Summary**
+* Grid Search allows us to scan through multiple free parameters with few lines of code
+* Parameters like the alpha term discussed in the previous video are not part of the fitting or training process. These values are called hyperparameters
+
+**Hyperparameters**
+* In Ridge Regression, the term `alpha` is called a **hyperparameter**
+* `scikit-learn` has a mean of automatically interating over these hyperparameter using cross-validation called **Grid Search**
+	* `Grid Search` takes the model or objects you would like to train and different values of the hyperparameters
+	* It then calculates the `MSE` or `R-squared` for various hyperparameter values, allowing you to choose the best values
+	* Finally we select the hyperparameter that minimizes the error
+
+![c6_w5_grid_search](https://github.com/luuquangtrung/ibm_data_science/blob/master/images/c6_w5_grid_search.png)
+
+**Select hyperparameters**
+* Split the dataset into 3 parts: training set, validation set, and test set
+	* Train the model with different hyperparameters on the *training set*
+	* Use the `R-squared` or `MSE` for each model
+	* Select the hyperparameter that minimizes the mean squared error or maximizes the R-squared on the *validation set*
+	* Finally test the model performance using the *test data*
+
+![c6_w5_grid_search_hyperparameter](https://github.com/luuquangtrung/ibm_data_science/blob/master/images/c6_w5_grid_search_hyperparameter.png)
+
+```python
+from sklearn.linear_model import Ridge
+from sklearn.model_selection import GridSearchCV # dictionary of parameter values
+
+
+# Grid Search parameters: using Python dictionary
+# each alpha will return a R^2 value
+parameters = [{'alpha': [0.001, 0.1, 1, 10, 100, 1000, 10000, 100000]}] 
+
+# Ridge regression also has the option to normalize the data
+parameters = [{'alpha': [1, 10, 100, 1000], 'normalized': [True, False]}] 
+
+# Create a ridge regression object or model.
+RR = Ridge()
+
+# Create a GridSearchCV object. Default scoring method is R-squared
+Grid = GridSearchCV(RR, parameters, cv=4) # cv: number of folds
+
+# Fit the object
+RR.fit(x_data[['horsepower', 'curb-weight', 'engine-size', 'highway-mpg']], y_data)
+
+# Find the best values for the free parameters
+Grid.best_estimator_
+
+# Find the mean score on the validation data
+scores = Grid.cv_results_
+scores['mean_test_score']
+
+# We can print out the score for different parameter values
+for param, mean_val, mean_test in zip(scores['params'], scores['mean_test_score'], scores['mean_train_score']):
+	print(param, "R^2 on test data: ", mean_val, "R^2 on train data: ", mean_test)
+
+```
