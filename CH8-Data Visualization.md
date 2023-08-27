@@ -1,5 +1,6 @@
 ## Tools: `Matplotlib`,`Seaborn`, `Folium`  
 # Week1: Introduction to Data Visualization Tools
+## `Line plot`
 example: Canada immigration--matplotlib
 ```python
 #data preprocessing
@@ -25,4 +26,5 @@ plt.xlabel('Years')
 plt.show()
 ```
 # Week 2 - Basic and Specialized Visualization Tools
+## `Area Plot`
 # Week 3 - Advanced Visualizations and Geospatial Data
